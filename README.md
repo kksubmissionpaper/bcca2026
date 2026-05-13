@@ -1,39 +1,54 @@
-This repository contains the Move smart contracts, the TypeScript benchmarking suite, test result etc.
+This repository contains the Move smart contracts (sample code of digital product passports)
 
-Move.toml: The manifest file for the Move package, defining dependencies and named addresses.
-abort_test.move: A Sui Move module designed for testing transaction abort scenarios.
-This Sui Move module, abort_test::taxonomy, is a test suite designed to benchmark error handling (Abort), gas calculations, and state rollback behavior in Sui Move.
+## Overview
 
-MOVE_multi.toml: Intentionally renamed for same-repo storage from Move.toml.The manifest file for the another Move package, defining dependencies and named addresses. multi_object_abort_test.move: A Sui Move module designed for testing transaction abort scenarios. This Sui Move module, multi_object_abort_test::taxonomy, is a test suite designed to benchmark error handling (Abort), gas calculations, and state rollback behavior in Sui Move for multi objects.
+This sample smart contract implements a Digital Product Passport (DPP) on the Sui blockchain.
+It represents the full lifecycle of a product — from manufacturing through to end-of-life disposal and recycling.
 
-Primary Structures:
+## Module Structure
 
-The Move module for single object defines two benchmark object types: OwnedTestObject (ownership model) and SharedTestObject (shared object model). 
-Also, the Move module for multi objects defines two benchmark object types: OwnedTestObject (ownership model) and SharedTestObject (shared object model). This module extends the single-object baseline to test three abort categories (State Rollback, Rebate Trap, and Payload Sweep) across three object-count tiers (_2, _5, _10) for both ownership models.
-See ReadmeTS.txt for details.
+**Module name:** `dpp_test::dpp`
 
-Note: On the client-side TypeScript script, create multiple shared objects for each test scenario upfront. This prevents transaction serialization. (Due to Sui's mechanism, transactions writing to a single shared object are queued sequentially.)
+| Import | Purpose |
+|---|---|
+| `std::string::{Self, String}` | Creating and manipulating UTF-8 strings |
+| `sui::object` *(implicit)* | Generating UIDs via `object::new` |
+| `sui::transfer` *(implicit)* | Transferring object ownership |
+| `sui::tx_context` *(implicit)* | Retrieving the sender address and transaction timestamp |
 
-EVALUETOOSMALL
+## Data Structures
 
-Error constant for threshold check failure (100)
+### 3.1 LifecycleEvent
 
-EREBATE_EXPERIMENT
+A struct that records each event occurring on a product. It carries the `store` and `drop` abilities, and is embedded directly within the `ProductPassport`.
 
-Intentional error constant for rebate experiments (999)
+### 3.2 ProductPassport
 
-Usage:
+An on-chain object representing the product itself. It carries the `key` and `store` abilities, and follows Sui's object model for ownership and transfer.
 
-Deployment: Deploy this package to the Sui blockchain (mainnet).
+| Field | Description |
+|---|---|
+| `id: UID` | Sui object unique identifier, generated via `object::new` |
+| `product_id: String` | A string that uniquely identifies the product |
+| `manufacturer: address` | The wallet address of the manufacturer — immutable |
+| `material_composition: String` | Information about the product's materials and components |
+| `carbon_footprint: u64` | Carbon footprint value (unit: gCO₂e) |
+| `current_owner: address` | The wallet address of the current owner |
+| `status: String` | One of `"active"`, `"transferred"`, or `"recycled"` |
+| `events: vector<LifecycleEvent>` | A chronological list of all lifecycle events |
 
-Execution: Call each function from TypeScript (client side).
+## Error Codes
 
-Measurement: Analyze transaction results to examine gas consumption (Computation Cost, Storage Cost, Rebate) until errors occur.
+| Constant | Value & Meaning |
+|---|---|
+| `E_NOT_OWNER` | `1` — Aborts when the caller's address does not match `current_owner` |
+| `E_ALREADY_RECYCLED` | `2` — Aborts when attempting to recycle a product that has already been recycled |
 
-workshop_benchmark_mainnet_yyyy-MM-ddTHH-mm-ss.csv: Result CSV file by the tests (single object).
-multi_object_benchmark_mainnet_yyyy-MM-ddTHH-mm-ss.csv: Result CSV file by the tests (multi object)
-main_benchmark_workshop_v3.ts: The entry point for the TypeScript-based benchmarking script (single object).
-main_benchmark_multi_v2.ts: The entry point for the TypeScript-based benchmarking script (multi object).
-package.json: Defines Node.js dependencies and scripts for the project.
-tsconfig.json: Configuration file for the TypeScript compiler.
-ReadmeTS_workshop.txt: A technical notes specifically for the TypeScript test script.
+## Lifecycle Flow
+
+| Step | Function / State |
+|---|---|
+| 1. Manufacturing | `mint_passport` → status: `"active"` |
+| 2. Supply chain transfer | `transfer_passport` → status: `"transferred"` |
+| 3. Repair or modification *(optional, repeatable)* | `record_repair` → status unchanged |
+| 4. Disposal or recycling | `recycle_product` → status: `"recycled"` *(terminal state)* |
