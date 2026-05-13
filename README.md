@@ -2,8 +2,7 @@ This repository contains the Move smart contracts (sample code of digital produc
 
 ## Overview
 
-This sample smart contract implements a Digital Product Passport (DPP) on the Sui blockchain.
-It represents the full lifecycle of a product — from manufacturing through to end-of-life disposal and recycling.
+The digital product passport sample smart contract has been developed on Sui blockchain testnet. It covers the entire lifecycle of the product, starting with its creation to disposal and recycling at the end of the lifecycle.
 
 ## Module Structure
 
@@ -20,11 +19,11 @@ It represents the full lifecycle of a product — from manufacturing through to 
 
 ### 3.1 LifecycleEvent
 
-A struct that records each event occurring on a product. It carries the `store` and `drop` abilities, and is embedded directly within the `ProductPassport`.
+Struct representing events happening to the product. This has the abilities of store and drop, and it forms part of the `ProductPassport` struct directly.
 
 ### 3.2 ProductPassport
 
-An on-chain object representing the product itself. It carries the `key` and `store` abilities, and follows Sui's object model for ownership and transfer.
+On-chain representation of the actual product itself. This has the abilities of `key` and `store`, and this is following the Sui object structure.
 
 | Field | Description |
 |---|---|
