@@ -1,3 +1,6 @@
+/// Simplified lifecycle-oriented DPPs model example.
+/// This sample focuses on product lifecycle tracking only, and does not include upstream raw material traceability.
+
 module dpp_test::dpp {
 
     use std::string::{Self, String};
