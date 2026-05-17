@@ -1,7 +1,7 @@
 This repository contains the Move smart contracts (sample code of digital product passports)
 
 ## Overview
-The digital product passport sample smart contract has been developed on Sui blockchain testnet. It covers the entire lifecycle of the product, starting with raw material issuance, through manufacturing and supply chain transfers, to disposal and recycling at the end of the lifecycle.
+This digital product passport sample smart contract has been developed by Sui Move. It covers the entire lifecycle of the product, starting with raw material issuance, through manufacturing and supply chain transfers, to disposal and recycling at the end of the lifecycle.
 
 ## Module Structure
 **Module name:** `dpp_test::dpp`
