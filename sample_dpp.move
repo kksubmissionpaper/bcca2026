@@ -26,8 +26,8 @@ module dpp_test::dpp {
         metadata: String,
     }
 
-    /// Digital Product Passport.
-    /// `material: RawMaterial` (wrapped object).
+    /// a Digital Product Passport Object.
+    /// `material: RawMaterial` (wrapped object) - material.
     public struct ProductPassport has key, store {
         id: UID,
         product_id: String,
